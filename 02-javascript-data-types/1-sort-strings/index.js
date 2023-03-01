@@ -12,6 +12,9 @@ export function sortStrings(arr, param = 'asc') {
       return 1;
     }
     if (a.toUpperCase() === b.toUpperCase()) {
+      if (a === a.toUpperCase()) {
+        return 1;
+      }
       return -1;
     }
     return a.localeCompare(b);
