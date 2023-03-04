@@ -6,12 +6,19 @@
  */
 export function sortStrings(arr, param = 'asc') {
   let sortedArray = [...arr];
-  const collator = new Intl.Collator('ru-RU',{caseFirst: 'upper',sensitivity: "variant"});
-  sortedArray.sort((a, b) => collator.compare(a, b));
-
-  if (param === 'desc') {
-    sortedArray.reverse();
+  const action = {
+    'asc': 1,
+    'desc': -1
+  };
+  if (!Object.keys(action).includes(param)) {
+    return false;
   }
+
+  const collator = new Intl.Collator(['ru-RU', 'en-EN'], {
+    caseFirst: 'upper',
+    sensitivity: "variant"
+  });
+  sortedArray.sort((a, b) => action[param] * collator.compare(a, b));
 
   return sortedArray;
 }
