@@ -11,7 +11,8 @@ export function trimSymbols(string, size) {
   if (size === 0) {
     return '';
   }
-  let count = 0, arrayResult = [];
+  let count = 0;
+  let arrayResult = [];
   for (let i = 0; i < string.length; i++) {
     if (string[i] === string[i - 1]) {
       count++;

@@ -7,8 +7,9 @@ export function invertObj(obj) {
   if (obj === undefined || Object.keys(obj).length === 0) {
     return obj;
   }
-  let array = Object.entries(obj), tmpValue = '';
-  for (let item of array) {
+  let array = Object.entries(obj);
+  let tmpValue = '';
+  for (const item of array) {
     tmpValue = item[0];
     item[0] = item[1];
     item[1] = tmpValue;
