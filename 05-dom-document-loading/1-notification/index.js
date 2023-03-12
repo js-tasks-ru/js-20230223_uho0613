@@ -1,4 +1,5 @@
 export default class NotificationMessage {
+  static currentObject = null;
 
   constructor(message = '', {duration = 1000, type = 'default'} = {}) {
     this.message = message;
@@ -15,15 +16,17 @@ export default class NotificationMessage {
   }
 
   show(targetElement = false) {
+    if (NotificationMessage.currentObject !== null) {
+      NotificationMessage.currentObject.remove();
+    }
+    NotificationMessage.currentObject = this;
+
     if (targetElement !== false) {
       this.element = this.getUpdatedTemplate(targetElement);
     }
-    console.log(this.element);
-    document.body.innerHTML += this.getMessageTemplate();
-    document.body.innerHTML += this.element;
-
+    document.body.append(this.getMessageTemplate());
     setTimeout(() => {
-      this.destroy();
+      this.remove();
     }, this.duration);
   }
 
@@ -41,17 +44,26 @@ export default class NotificationMessage {
   }
 
   getMessageTemplate() {
-    return `<div class="notification ${this.type}" style="--value:${this.duration / 1000}s">
+    let templateWrapper = document.createElement('div');
+
+    templateWrapper.innerHTML = `<div class="notification ${this.type}" style="--value:${this.duration / 1000}s">
     <div class="timer"></div>
     <div class="inner-wrapper">
       <div class="notification-header">${this.type}</div>
+      ${this.element.outerHTML}
     </div>
   </div>`;
+    this.messageTemplate = templateWrapper.firstElementChild;
+    return this.messageTemplate;
   }
 
   remove() {
+
     if (this.element) {
       this.element.remove();
+    }
+    if (this.messageTemplate) {
+      this.messageTemplate.remove();
     }
   }
 
