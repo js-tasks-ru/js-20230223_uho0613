@@ -19,21 +19,9 @@ export default class SortableTable {
   }
 
   get template() {
-    return `<div data-element="productsContainer" class="products-list__container">
-  <div class="sortable-table">
+    return `<div class="sortable-table">
      ${this.header}
-     ${this.getTableBody()}
-    <div data-element="loading" class="loading-line sortable-table__loading-line"></div>
-
-    <div data-element="emptyPlaceholder" class="sortable-table__empty-placeholder">
-      <div>
-        <p>No products satisfies your filter criteria</p>
-        <button type="button" class="button-primary-outline">Reset all filters</button>
-      </div>
-    </div>
-
-  </div>
-</div>`;
+     ${this.getTableBody()}</div>`;
   }
 
   get header() {
@@ -43,31 +31,24 @@ export default class SortableTable {
   }
 
   getTableBody() {
-    let bodyResult = [];
-    for (const config of this.data) {
-      bodyResult.push((this.getProductRow(config)));
-    }
+    const bodyResult = this.data.map((item) => {
+      return this.getProductRow(item);
+    });
+
     return `<div data-element="body" class="sortable-table__body">
       ${bodyResult.join('')}
     </div>`;
   }
 
   getProductRow(productRowData) {
-    return `<a href="#" class="sortable-table__row">
-      ${this.getImageSell(productRowData)}
-      <div class="sortable-table__cell">${productRowData.title}</div>
-
-      <div class="sortable-table__cell">${productRowData.quantity}</div>
-      <div class="sortable-table__cell">${productRowData.price}</div>
-      <div class="sortable-table__cell">${productRowData.sales}</div>
+    const headerConfig = [...this.headerConfig];
+    const resultCells = headerConfig.map((config) => {
+      return typeof config.template === 'function' ?
+        config.template(productRowData) : ` <div class="sortable-table__cell">${productRowData[config['id']]}</div>`;
+    });
+    return `<a href="/products/${productRowData['id']}" class="sortable-table__row">
+      ${resultCells.join('')}
     </a>`;
-  }
-
-  getImageSell(data) {
-    if (typeof this.headerConfig[0].template === "function") {
-      return this.headerConfig[0].template(data);
-    }
-    return '';
   }
 
   getHeaderCells() {
@@ -107,7 +88,6 @@ export default class SortableTable {
     this.sortData(field, order);
     this.subElements.body.innerHTML = this.getTableBody();
     this.subElements.header.innerHTML = this.getHeaderCells();
-    throw new Error(`unknown type for sorting`);
   }
 
   sortData(field, order) {
