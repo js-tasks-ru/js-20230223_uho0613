@@ -1,35 +1,33 @@
 class Tooltip {
   element = null;
   static instance = null;
-  subSelectors = [];
-
   constructor() {
     if (Tooltip.instance) {
       return Tooltip.instance;
     }
     this.initElement();
-    this.initSubSelectors();
     Tooltip.instance = this;
   }
 
   initialize() {
-    this.subSelectors.forEach((item) => {
-      item.addEventListener('pointerover', this.actionForOver);
-    });
+    document.body.addEventListener('pointerover', this.actionForOver);
   }
 
   actionForOver = (event) => {
-    this.element.hidden = false;
-    event.target.addEventListener('pointermove', this.actionForMoving);
-    event.target.addEventListener('pointerout', this.actionForOut);
     const closestElement = event.target.closest('[data-tooltip]');
+    if (!closestElement) {
+      return;
+    }
+    this.element.hidden = false;
+    closestElement.addEventListener('pointermove', this.actionForMoving);
+    closestElement.addEventListener('pointerout', this.actionForOut);
     this.render(`${closestElement.dataset.tooltip}`);
-  }
+  };
 
   actionForOut = (event) => {
     event.target.removeEventListener('pointermove', this.actionForMoving);
     this.element.hidden = true;
-  }
+  };
 
   actionForMoving = (event) => {
     if (!event.clientY) {
@@ -55,10 +53,6 @@ class Tooltip {
     return this.element;
   }
 
-  initSubSelectors() {
-    this.subSelectors = document.body.querySelectorAll("[data-tooltip]");
-  }
-
   remove() {
     if (this.element !== null) {
       this.element.remove();
@@ -67,7 +61,8 @@ class Tooltip {
   }
 
   removeAllListeners() {
-    this.subSelectors.forEach((item) => {
+    const subSelectors = document.body.querySelectorAll("[data-tooltip]");
+    subSelectors.forEach((item) => {
       item.removeListener('pointermove', this.actionForMoving);
       item.removeListener('pointerout', this.actionForOut);
       item.removeListener('pointerover', this.actionForOver);
@@ -77,7 +72,6 @@ class Tooltip {
   destroy() {
     this.removeAllListeners();
     Tooltip.instance = null;
-    this.subSelectors = [];
     this.remove();
   }
 }
