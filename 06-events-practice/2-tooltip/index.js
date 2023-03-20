@@ -1,18 +1,15 @@
 class Tooltip {
   element = null;
-  instance = null;
+  static instance = null;
   subSelectors = [];
 
   constructor() {
-    if (this.instance !== null) {
-      return this.instance;
+    if (Tooltip.instance) {
+      return Tooltip.instance;
     }
     this.initElement();
     this.initSubSelectors();
-    this.actionForMoving = this.actionForMoving.bind(this);
-    this.actionForOver = this.actionForOver.bind(this);
-    this.actionForOut = this.actionForOut.bind(this);
-    this.instance = this;
+    Tooltip.instance = this;
   }
 
   initialize() {
@@ -21,7 +18,7 @@ class Tooltip {
     });
   }
 
-  actionForOver(event) {
+  actionForOver = (event) => {
     this.element.hidden = false;
     event.target.addEventListener('pointermove', this.actionForMoving);
     event.target.addEventListener('pointerout', this.actionForOut);
@@ -29,19 +26,19 @@ class Tooltip {
     this.render(`${closestElement.dataset.tooltip}`);
   }
 
-  actionForOut(event) {
+  actionForOut = (event) => {
     event.target.removeEventListener('pointermove', this.actionForMoving);
     this.element.hidden = true;
   }
 
-  actionForMoving(event) {
+  actionForMoving = (event) => {
     if (!event.clientY) {
       return;
     }
     this.element.style.cssText = "position:fixed";
     this.element.style.top = event.clientY + 'px';
     this.element.style.left = event.clientX + 'px';
-  }
+  };
 
   render(string = '') {
     this.element.innerHTML = string;
@@ -79,7 +76,7 @@ class Tooltip {
 
   destroy() {
     this.removeAllListeners();
-    this.instance = null;
+    Tooltip.instance = null;
     this.subSelectors = [];
     this.remove();
   }
